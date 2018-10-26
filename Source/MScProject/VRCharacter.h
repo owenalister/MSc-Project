@@ -8,6 +8,7 @@
 #include "MotionControllerComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/Classes/Components/StaticMeshComponent.h"
+#include "Engine/Classes/Components/SKeletalMeshComponent.h"
 #include "Runtime/Engine/Classes/Components/InputComponent.h"
 #include "VRCharacter.generated.h"
 
@@ -29,18 +30,22 @@ public:
 	USceneComponent* VROriginComp;
 
 	UPROPERTY(EditAnywhere)
+	USceneComponent* CameraOffset;
+
+	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* HandMesh_L;
 
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* HandMesh_R;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UMotionControllerComponent* MotionController_R;
 
 	UPROPERTY(EditAnywhere)
 	UMotionControllerComponent* MotionController_L;
 	
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FVector movementInput;
 	
 protected:
 	// Called when the game starts or when spawned

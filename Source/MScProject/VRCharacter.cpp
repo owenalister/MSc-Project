@@ -12,6 +12,10 @@ AVRCharacter::AVRCharacter()
 	// setup vr origin component
 	VROriginComp = CreateDefaultSubobject<USceneComponent>(TEXT("VRCameraOrigin"));
 
+
+	//setup cameraoffset
+	CameraOffset = CreateDefaultSubobject<USceneComponent>(TEXT("CameraOffset"));
+
 	// Setup camera
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	
@@ -29,12 +33,15 @@ AVRCharacter::AVRCharacter()
 
 	// attatchment heiararchy 
 	VROriginComp->AttachTo(RootComponent);
-	Camera->SetupAttachment(VROriginComp);
+	CameraOffset->AttachTo(VROriginComp);
+	Camera->SetupAttachment(CameraOffset);
 	MotionController_L->AttachTo(VROriginComp);
 	MotionController_R->AttachTo(VROriginComp);
 	HandMesh_L->AttachTo(MotionController_L);
 	HandMesh_R->AttachTo(MotionController_R);
 	
+	// initialize variables
+	movementInput = FVector(0,0,0);
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +56,12 @@ void AVRCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	// get motion controller rotation
+	FRotator controllerYaw =  FRotator(0, MotionController_L->GetComponentRotation().Yaw - 90.0f, 0);
+	GetMesh()->SetWorldRotation(controllerYaw);
+	FVector dir = MotionController_L->GetForwardVector();
+			
+	//AddMovementInput(dir.RotateAngleAxis(MotionController_L->GetComponentRotation().Yaw, FVector(0, 0, 1)));
 }
 
 // Called to bind functionality to input
@@ -66,19 +79,46 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void AVRCharacter::Move_Forwards(float AxisValue) 
 {
 	float ForwardsSpeed = 100;
-	FVector camDir(Camera->GetForwardVector());
+	
+	
+	
+	FVector camDir(MotionController_L->GetForwardVector());
 	camDir.Z = 0;
 	camDir.Normalize();
+	FRotator rot(0.0f, GetControlRotation().Yaw, 0.0f);
+	FVector fwd = FRotationMatrix(rot).GetScaledAxis(EAxis::X);
+	//AddMovementInput(fwd, AxisValue * ForwardsSpeed);
+//	movementInput.X = AxisValue;
 	AddMovementInput(camDir, AxisValue * ForwardsSpeed);
+
+	camDir=MotionController_L->GetRightVector();
+	camDir.Z = 0;
+	camDir.Normalize();
+	
+	fwd = FRotationMatrix(rot).GetScaledAxis(EAxis::Y);
+	//AddMovementInput(fwd, AxisValue * ForwardsSpeed);
+//	movementInput.X = AxisValue;
+	AddMovementInput(camDir, InputComponent->GetAxisValue(TEXT("Strafe")) * ForwardsSpeed);
+
+	movementInput.X = AxisValue;
+	movementInput.Y = InputComponent->GetAxisValue(TEXT("Strafe"));
 }
 
 void AVRCharacter::Strafe(float AxisValue)
-{
-	float StrafeSpeed = 100;
+{	
+	//float StrafeSpeed = 100;
+	//movementInput->Y = AxisValue * StrafeSpeed;
+	/*
+	
 	FVector camDir(Camera->GetRightVector());
+	camDir = MotionController_R->GetForwardVector();
 	camDir.Z = 0;
 	camDir.Normalize();
-	AddMovementInput(camDir, AxisValue*StrafeSpeed);
+	FRotator rot(0.0f, GetControlRotation().Yaw, 0.0f);
+	FVector fwd = FRotationMatrix(rot).GetScaledAxis(EAxis::Y);
+	//AddMovementInput(fwd, AxisValue * StrafeSpeed);
+	
+	AddMovementInput(camDir, AxisValue*StrafeSpeed);*/
 }
 
 void AVRCharacter::JumpStart()
