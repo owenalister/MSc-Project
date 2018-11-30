@@ -16,6 +16,9 @@ AVRCharacter::AVRCharacter()
 	//setup cameraoffset
 	CameraOffset = CreateDefaultSubobject<USceneComponent>(TEXT("CameraOffset"));
 
+	//setup camera target position
+	CameraTarget = CreateDefaultSubobject<USceneComponent>(TEXT("CameraTarget"));
+
 	// Setup camera
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	
@@ -34,6 +37,7 @@ AVRCharacter::AVRCharacter()
 	// attatchment heiararchy 
 	VROriginComp->AttachTo(RootComponent);
 	CameraOffset->AttachTo(VROriginComp);
+	CameraTarget->AttachTo(VROriginComp);
 	Camera->SetupAttachment(CameraOffset);
 	MotionController_L->AttachTo(VROriginComp);
 	MotionController_R->AttachTo(VROriginComp);
@@ -60,7 +64,7 @@ void AVRCharacter::Tick(float DeltaTime)
 	FRotator controllerYaw =  FRotator(0, MotionController_L->GetComponentRotation().Yaw - 90.0f, 0);
 	GetMesh()->SetWorldRotation(controllerYaw);
 	FVector dir = MotionController_L->GetForwardVector();
-			
+	
 	//AddMovementInput(dir.RotateAngleAxis(MotionController_L->GetComponentRotation().Yaw, FVector(0, 0, 1)));
 }
 
@@ -129,4 +133,10 @@ void AVRCharacter::JumpStart()
 void AVRCharacter::JumpStop()
 {
 	bPressedJump = false;
+}
+
+void AVRCharacter::SetCameraOrigin(FVector pos) 
+{
+	CameraOffset->SetWorldLocation(pos, false, 0, ETeleportType::None);
+	
 }

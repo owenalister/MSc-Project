@@ -29,8 +29,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	USceneComponent* VROriginComp;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* CameraOffset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USceneComponent* CameraTarget;
 
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* HandMesh_L;
@@ -63,4 +66,5 @@ public:
 	void Strafe(float AxisValue);
 	void JumpStart();
 	void JumpStop();
+	void SetCameraOrigin(FVector pos);
 };
