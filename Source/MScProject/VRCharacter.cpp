@@ -22,10 +22,13 @@ AVRCharacter::AVRCharacter()
 	// Setup camera
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	
+	//init animasset
+	//Anim = CreateDefaultSubobject<UAnimationAsset>(TEXT("death anim"))
 
 	// create a visible representation of hands
 	HandMesh_L = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HandLeft"));
 	HandMesh_R = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HandRight"));
+	Sword = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sword"));
 
 	// create motion controllers and assign hands
 	MotionController_L = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionControllerL"));
@@ -37,22 +40,32 @@ AVRCharacter::AVRCharacter()
 	// attatchment heiararchy 
 	VROriginComp->AttachTo(RootComponent);
 	CameraOffset->AttachTo(VROriginComp);
-	CameraTarget->AttachTo(VROriginComp);
+	CameraTarget->AttachTo(GetMesh());
 	Camera->SetupAttachment(CameraOffset);
 	MotionController_L->AttachTo(VROriginComp);
 	MotionController_R->AttachTo(VROriginComp);
 	HandMesh_L->AttachTo(MotionController_L);
 	HandMesh_R->AttachTo(MotionController_R);
+	//Sword->AttachTo(MotionController_R);
 	
 	// initialize variables
 	movementInput = FVector(0,0,0);
+	startingHealth = 100;
+	damage = 50;
+	isDead = false;
+	firstPerson = true;
 }
 
 // Called when the game starts or when spawned
 void AVRCharacter::BeginPlay()
 {
+	GetMesh()->HideBoneByName("sword_bottom", EPhysBodyOp::PBO_None);
 	Super::BeginPlay();
 	
+	if (firstPerson)
+		GetMesh()->HideBoneByName("head", EPhysBodyOp::PBO_None);
+	
+	currentHealth = startingHealth;
 }
 
 // Called every frame
@@ -66,6 +79,11 @@ void AVRCharacter::Tick(float DeltaTime)
 	FVector dir = MotionController_L->GetForwardVector();
 	
 	//AddMovementInput(dir.RotateAngleAxis(MotionController_L->GetComponentRotation().Yaw, FVector(0, 0, 1)));
+	if(currentHealth<=0 )
+	{
+		//KillPlayer();
+		
+	}
 }
 
 // Called to bind functionality to input
@@ -77,7 +95,7 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AVRCharacter::JumpStart);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AVRCharacter::JumpStop);
-	
+	PlayerInputComponent->BindAction("Camera", IE_Pressed, this, &AVRCharacter::SetFirsperson);
 }
 
 void AVRCharacter::Move_Forwards(float AxisValue) 
@@ -137,6 +155,42 @@ void AVRCharacter::JumpStop()
 
 void AVRCharacter::SetCameraOrigin(FVector pos) 
 {
+	if(!firstPerson)
 	CameraOffset->SetWorldLocation(pos, false, 0, ETeleportType::None);
 	
+}
+
+void AVRCharacter::TakeDamage(float damage)
+{
+	currentHealth -= damage;
+	if (currentHealth < 0)
+		currentHealth = 0;
+}
+
+void AVRCharacter::KillPlayer()
+{
+	if (!isDead) 
+	{
+		//PlayAnimMontage(Anim, 1.0f);
+		//isDead = true;
+	}	
+}
+
+void AVRCharacter::RespawnPlayer()
+{
+	
+}
+
+void AVRCharacter::SetFirsperson()
+{
+	if (firstPerson)
+	{
+		firstPerson = false;
+		GetMesh()->UnHideBoneByName("head");
+	}
+	else
+	{
+		firstPerson = true;
+		GetMesh()->HideBoneByName("head", EPhysBodyOp::PBO_None);
+	}
 }

@@ -10,6 +10,7 @@
 #include "Engine/Classes/Components/StaticMeshComponent.h"
 #include "Engine/Classes/Components/SKeletalMeshComponent.h"
 #include "Runtime/Engine/Classes/Components/InputComponent.h"
+
 #include "VRCharacter.generated.h"
 
 
@@ -22,15 +23,18 @@ public:
 	// Sets default values for this character's properties
 	AVRCharacter();
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCameraComponent* Camera;
 
 	// origin for hmd and motion controls
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* VROriginComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* CameraOffset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool firstPerson;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* CameraTarget;
@@ -41,6 +45,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* HandMesh_R;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* Sword;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UMotionControllerComponent* MotionController_R;
 
@@ -49,7 +56,22 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector movementInput;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float currentHealth;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float startingHealth;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float damage;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage *Anim;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool isDead;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -67,4 +89,14 @@ public:
 	void JumpStart();
 	void JumpStop();
 	void SetCameraOrigin(FVector pos);
+	UFUNCTION(BlueprintCallable)
+	void TakeDamage(float dmg);
+
+	void SetFirsperson();
+
+	UFUNCTION(BlueprintCallable)
+	void KillPlayer();
+
+	UFUNCTION(BlueprintCallable)
+	void RespawnPlayer();
 };

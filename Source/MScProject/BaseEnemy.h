@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include "Engine/Classes/Components/StaticMeshComponent.h"
+#include "Engine/Classes/Components/SKeletalMeshComponent.h"
 #include "Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "BaseEnemy.generated.h"
 
@@ -21,8 +23,11 @@ public:
 	ABaseEnemy();
 
 	//reference to player
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ACharacter* playerRef;
+
+	UPROPERTY(VisibleAnywhere)
+	float KnockBack;
 	
 	UPROPERTY(VisibleAnywhere)
 	bool inAttackRange;
@@ -35,6 +40,24 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool tryAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float startingHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float currentHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool isDead;
+
+	UPROPERTY(EditAnywhere)
+	UAnimSequence *Anim;
+
+	FVector startPos;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -46,6 +69,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
-	
+	UFUNCTION(BlueprintCallable)
+	void TakeDamage(float dmg);
+
+	UFUNCTION(BlueprintCallable)
+	void KillEnemy();
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerRef();
 };
+	
