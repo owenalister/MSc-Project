@@ -62,7 +62,7 @@ void ABaseEnemy::Tick(float DeltaTime)
 	}
 	else //walk back to start loc
 	{
-		if ((this->GetActorLocation()-startPos).Size() > 80)
+		if ((this->GetActorLocation()-startPos).Size() > 150)
 		{
 			// turn towards player
 			FRotator targetRot;

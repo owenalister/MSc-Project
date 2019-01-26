@@ -34,6 +34,9 @@ public:
 	USceneComponent* CameraOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USceneComponent* SwordOffset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool firstPerson;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -65,6 +68,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	float damage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FVector CheckPointLocation;
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage *Anim;
@@ -99,4 +105,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void RespawnPlayer();
+	
+	UFUNCTION(BlueprintCallable)
+	void SetCamera();
+
+	UFUNCTION(BlueprintCallable)
+	void ManageHealth();
+
+	UFUNCTION(BlueprintCallable)
+	void SetSwordLoc();
 };

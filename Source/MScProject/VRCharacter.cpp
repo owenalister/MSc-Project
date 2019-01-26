@@ -19,6 +19,8 @@ AVRCharacter::AVRCharacter()
 	//setup camera target position
 	CameraTarget = CreateDefaultSubobject<USceneComponent>(TEXT("CameraTarget"));
 
+	SwordOffset = CreateDefaultSubobject<USceneComponent>(TEXT("SwordOffset"));
+
 	// Setup camera
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	
@@ -41,6 +43,7 @@ AVRCharacter::AVRCharacter()
 	VROriginComp->AttachTo(RootComponent);
 	CameraOffset->AttachTo(VROriginComp);
 	CameraTarget->AttachTo(GetMesh());
+	Sword->AttachTo(SwordOffset);
 	Camera->SetupAttachment(CameraOffset);
 	MotionController_L->AttachTo(VROriginComp);
 	MotionController_R->AttachTo(VROriginComp);
@@ -54,6 +57,7 @@ AVRCharacter::AVRCharacter()
 	damage = 50;
 	isDead = false;
 	firstPerson = true;
+	CheckPointLocation = FVector(0, 0, 0);
 }
 
 // Called when the game starts or when spawned
@@ -72,7 +76,9 @@ void AVRCharacter::BeginPlay()
 void AVRCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+	SetCamera();
+	SetSwordLoc();
+	ManageHealth();
 	// get motion controller rotation
 	FRotator controllerYaw =  FRotator(0, MotionController_L->GetComponentRotation().Yaw - 90.0f, 0);
 	GetMesh()->SetWorldRotation(controllerYaw);
@@ -176,9 +182,32 @@ void AVRCharacter::KillPlayer()
 	}	
 }
 
+void AVRCharacter::ManageHealth()
+{
+	if (currentHealth <= 0)
+	{
+		if (!isDead)
+		{
+			isDead = true;
+		}
+	}
+}
+
 void AVRCharacter::RespawnPlayer()
 {
 	
+}
+
+void AVRCharacter::SetCamera()
+{
+	if (firstPerson)
+	{
+		CameraOffset->SetRelativeLocation(FVector(0, 0, 0));
+	}
+	else
+	{
+		CameraOffset->SetWorldLocation(CameraTarget->GetComponentLocation());
+	}
 }
 
 void AVRCharacter::SetFirsperson()
@@ -193,4 +222,9 @@ void AVRCharacter::SetFirsperson()
 		firstPerson = true;
 		GetMesh()->HideBoneByName("head", EPhysBodyOp::PBO_None);
 	}
+}
+
+void AVRCharacter::SetSwordLoc()
+{
+		SwordOffset->SetWorldTransform(MotionController_R->GetComponentTransform());
 }
