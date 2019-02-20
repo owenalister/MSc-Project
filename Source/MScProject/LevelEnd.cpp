@@ -14,13 +14,14 @@ ALevelEnd::ALevelEnd()
 	timerActive = false;
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->OnComponentBeginOverlap.AddDynamic(this, &ALevelEnd::OnMeshBeginOverlap);
+	isEnded = false;
 }
 
 // Called when the game starts or when spawned
 void ALevelEnd::BeginPlay()
 {
 	Super::BeginPlay();
-	TimerStart();
+	
 }
 
 // Called every frame
@@ -38,17 +39,19 @@ void ALevelEnd::TimerStart()
 
 void ALevelEnd::LevelComplete()
 {
-	timerActive = false;
+	if (isEnded == false)
+	{
+		timerActive = false;
+		AVRCharacter* playerRef = Cast<AVRCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-	/*
-		TODO:
-			Write stats to file:
-			time
-			health
-			deaths
-	*/
-	
-
+		const char *path = "/gameplayResults.txt";
+		std::ofstream txtfile(path);
+		txtfile << "Completion time:" << completionTime << "\n";
+		txtfile << "Health lost: " << playerRef->totalHealthLost << "\n";
+		txtfile << "Death count: " << playerRef->deathCount << "\n";
+		txtfile << "Fall count: " << playerRef->fallCount << "\n";
+		txtfile.close();
+	}
 }
 
 void ALevelEnd::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

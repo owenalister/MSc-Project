@@ -55,12 +55,13 @@ void AMovingPlatform::Tick(float DeltaTime)
 	float offset = DeltaTime * frequency;
 	if (horizontal)
 	{
-		
+		//move in direction object is facing
 		newLocation.X += (amplitude * (FMath::Sin(RunningTime + offset) - FMath::Sin(RunningTime))) * GetActorForwardVector().X;
 		newLocation.Y += (amplitude * (FMath::Sin(RunningTime + offset) - FMath::Sin(RunningTime))) * GetActorForwardVector().Y;
 	}
 	else 
 	{
+		//move vericaly
 		newLocation.Z += (amplitude * (FMath::Sin(RunningTime + offset) - FMath::Sin(RunningTime))) ;
 	}
 	

@@ -5,6 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Engine/Classes/Components/StaticMeshComponent.h"
+#include <iostream>
+#include <fstream>
+#include "VRCharacter.h"	
+#include "Kismet/GameplayStatics.h"
 #include "LevelEnd.generated.h"
 
 UCLASS()
@@ -18,10 +22,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float completionTime;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float healthLost;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float deathCount;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -29,6 +33,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Mesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool isEnded;
 
 	ALevelEnd();
 
@@ -40,8 +47,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
 	void TimerStart();
 	
+	UFUNCTION(BlueprintCallable)
 	void LevelComplete();
 
 	UFUNCTION()

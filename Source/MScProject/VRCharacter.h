@@ -10,7 +10,6 @@
 #include "Engine/Classes/Components/StaticMeshComponent.h"
 #include "Engine/Classes/Components/SKeletalMeshComponent.h"
 #include "Runtime/Engine/Classes/Components/InputComponent.h"
-
 #include "VRCharacter.generated.h"
 
 
@@ -31,10 +30,13 @@ public:
 	USceneComponent* VROriginComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USceneComponent* CameraOffset;
+	USceneComponent* FootLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USceneComponent* SwordOffset;
+	USceneComponent* CameraRoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USceneComponent* CameraOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool firstPerson;
@@ -56,9 +58,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UMotionControllerComponent* MotionController_L;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FVector movementInput;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	float currentHealth;
@@ -69,14 +68,31 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	float damage;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector CheckPointLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float PlayerHeight;
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage *Anim;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isDead;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float totalHealthLost;
+
+	// number of times fell off the map
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float fallCount;
+
+	// number of times killed by an ememy
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float deathCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector movementInput;
 
 protected:
 	// Called when the game starts or when spawned
@@ -95,8 +111,9 @@ public:
 	void JumpStart();
 	void JumpStop();
 	void SetCameraOrigin(FVector pos);
+
 	UFUNCTION(BlueprintCallable)
-	void TakeDamage(float dmg);
+	void DamagePlayer(float dmg);
 
 	void SetFirsperson();
 
@@ -112,6 +129,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ManageHealth();
 
+
 	UFUNCTION(BlueprintCallable)
-	void SetSwordLoc();
+	void SetPlayerLoc();
+
+	UFUNCTION(BlueprintCallable)
+	void ScalePlayerModel();
+
 };

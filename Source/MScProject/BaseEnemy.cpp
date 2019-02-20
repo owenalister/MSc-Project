@@ -8,7 +8,7 @@ ABaseEnemy::ABaseEnemy()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	damage = 15;
+	damage = 30;
 	startingHealth = 100;
 }
 
@@ -41,38 +41,39 @@ void ABaseEnemy::Tick(float DeltaTime)
 		KnockBack -= 0.75f;
 		Jump();
 	}
-	else{
-	// check if player close
-	if (distToPlayer < 1000) {
-		if (distToPlayer > 130)
-		{
-			// turn towards player
-			FRotator targetRot;
-			targetRot = UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), playerRef->GetActorLocation());
-			this->SetActorRotation(targetRot);
-			// walk towards player
-			AddMovementInput(this->GetActorForwardVector(), 0.5f);
-			inAttackRange = false;
-		}
-		else
-		{
-			inAttackRange = true;
-		}
-		
-	}
-	else //walk back to start loc
+	else 
 	{
-		if ((this->GetActorLocation()-startPos).Size() > 150)
-		{
-			// turn towards player
-			FRotator targetRot;
-			targetRot = UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), startPos);
-			this->SetActorRotation(targetRot);
-			// walk towards player
-			AddMovementInput(this->GetActorForwardVector(), 0.5f);
-			inAttackRange = false;
+		// check if player close
+		if (distToPlayer < 1000) {
+			if (distToPlayer > 130)
+			{
+				// turn towards player
+				FRotator targetRot;
+				targetRot = UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), playerRef->GetActorLocation());
+				this->SetActorRotation(targetRot);
+				// walk towards player
+				AddMovementInput(this->GetActorForwardVector(), 0.5f);
+				inAttackRange = false;
+			}
+			else
+			{
+				inAttackRange = true;
+			}
+
 		}
-	}
+		else //walk back to start loc
+		{
+			if ((this->GetActorLocation() - startPos).Size() > 150)
+			{
+				// turn towards player
+				FRotator targetRot;
+				targetRot = UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), startPos);
+				this->SetActorRotation(targetRot);
+				// walk towards player
+				AddMovementInput(this->GetActorForwardVector(), 0.5f);
+				inAttackRange = false;
+			}
+		}
 	}
 
 	//check if in range of player
@@ -80,7 +81,7 @@ void ABaseEnemy::Tick(float DeltaTime)
 	{
 		tryAttack = true;
 	}
-	else 
+	else
 	{
 		tryAttack = false;
 	}
@@ -88,7 +89,7 @@ void ABaseEnemy::Tick(float DeltaTime)
 	if (currentHealth <= 0)
 	{
 		isDead = true;
-		KillEnemy();
+		//KillEnemy();
 	}
 }
 
@@ -101,7 +102,7 @@ void ABaseEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void ABaseEnemy::TakeDamage(float dmg)
 {
-	currentHealth -= damage;
+	currentHealth -= dmg;
 	KnockBack = 1000;
 	if (currentHealth < 0)
 		currentHealth = 0;
@@ -119,7 +120,7 @@ void ABaseEnemy::TakeDamage(float dmg)
 void ABaseEnemy::KillEnemy()
 {
 	if(!isDead)
-	GetMesh()->PlayAnimation(Anim, false);
+		GetMesh()->PlayAnimation(Anim, false);
 }
 
 void ABaseEnemy::SetPlayerRef()
